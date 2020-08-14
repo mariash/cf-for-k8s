@@ -5445,6 +5445,12 @@ spec:
           value: Kubernetes
         image: gcr.io/cf-routing/proxyv2@sha256:0671300037c5d706f20f01ebc4e403f44fff648245b5e121851c81a389b9ea0f
         lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - sleep 20
           preStop:
             exec:
               command:
@@ -5466,6 +5472,16 @@ spec:
         - containerPort: 15090
           name: http-envoy-prom
           protocol: TCP
+        livenessProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /healthz/ready
+            port: 15021
+            scheme: HTTP
+          initialDelaySeconds: 1
+          periodSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 1
         readinessProbe:
           failureThreshold: 30
           httpGet:
